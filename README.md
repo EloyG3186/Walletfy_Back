@@ -1,21 +1,21 @@
 # Walletfy - Backend API
 
-API REST para la aplicaciu00f3n Walletfy de gestiu00f3n de gastos personales. Esta API permite a los usuarios registrar, categorizar y analizar sus gastos e ingresos personales.
+API REST para la aplicacion Walletfy de gestion de gastos personales. Esta API permite a los usuarios registrar, categorizar y analizar sus gastos e ingresos personales.
 
-## Tecnologu00edas utilizadas
+## Tecnologías utilizadas
 
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
-- Joi (validaciu00f3n)
+- Joi (validaciones)
 
 ## Requisitos previos
 
 - Node.js (v14 o superior)
 - MongoDB (local o Atlas)
 
-## Instalaciu00f3n
+## Instalaciones
 
 1. Clonar el repositorio
 2. Instalar dependencias:
@@ -24,7 +24,7 @@ API REST para la aplicaciu00f3n Walletfy de gestiu00f3n de gastos personales. Es
 npm install
 ```
 
-3. Crear un archivo `.env` en la rau00edz del proyecto con las siguientes variables:
+3. Crear un archivo `.env` en la raiz del proyecto con las siguientes variables:
 
 ```
 PORT=5000
@@ -38,7 +38,7 @@ NODE_ENV=development
 # Modo desarrollo
 npm run dev
 
-# Modo producciu00f3n
+# Modo produccion
 npm start
 ```
 
@@ -47,11 +47,11 @@ npm start
 ```
 /backend
   /src
-    /config        # Configuraciu00f3n de la aplicaciu00f3n
-    /controllers   # Controladores para manejar la lu00f3gica de negocio
+    /config        # Configuracion de la aplicacion
+    /controllers   # Controladores para manejar la logica de negocio
     /middlewares   # Middlewares personalizados
-    /models        # Modelos de datos y esquemas de validaciu00f3n
-    /routes        # Definiciu00f3n de rutas de la API
+    /models        # Modelos de datos y esquemas de validacion
+    /routes        # Definicion de rutas de la API
   .env             # Variables de entorno
   index.js         # Punto de entrada de la aplicaciu00f3n
   package.json     # Dependencias y scripts
@@ -88,7 +88,7 @@ npm start
 
 ## Integraciu00f3n con el Frontend
 
-Para integrar esta API con el frontend existente, es necesario actualizar la implementaciu00f3n del datasource en el frontend para que utilice esta API en lugar del almacenamiento local. Esto implica modificar el archivo `LocalStorageDS.ts` para que realice peticiones HTTP a los endpoints de esta API.
+Para integrar esta API con el frontend existente, es necesario actualizar la implementación del datasource en el frontend para que utilice esta API en lugar del almacenamiento local. Esto implica modificar el archivo `LocalStorageDS.ts` para que realice peticiones HTTP a los endpoints de esta API.
 
 ## Contribuir
 
