@@ -1,5 +1,5 @@
 /**
- * Implementaciu00f3n de la capa de datos para el frontend que utiliza la API REST
+ * Implementación de la capa de datos para el frontend que utiliza la API REST
  * Esta clase puede ser adaptada para reemplazar el LocalStorageDS en el frontend
  */
 class ApiDS {
@@ -8,7 +8,7 @@ class ApiDS {
   }
 
   /**
-   * Mu00e9todo auxiliar para realizar peticiones HTTP
+   * Método auxiliar para realizar peticiones HTTP
    */
   async fetchApi(endpoint, options = {}) {
     try {
@@ -24,12 +24,12 @@ class ApiDS {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error en la peticiciu00f3n');
+        throw new Error(data.message || 'Error en la petición');
       }
 
       return data;
     } catch (error) {
-      console.error('Error en la peticiciu00f3n:', error);
+      console.error('Error en la petición:', error);
       throw error;
     }
   }

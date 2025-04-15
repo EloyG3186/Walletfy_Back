@@ -1,15 +1,33 @@
 const Event = require('../models/Event');
 
-// Obtener todos los eventos
+// Obtener todos los eventos del usuario autenticado
 exports.getAllEvents = async (req, res) => {
   try {
-    // Filtrar por tipo si se proporciona en la consulta
-    const filter = {};
-    if (req.query.type) {
+    console.log('Usuario autenticado:', req.user._id);
+    
+    // Filtrar solo por el ID del usuario
+    const filter = { user: req.user._id };
+    
+    // Solo filtrar por tipo si es 'income' o 'expense'
+    if (req.query.type && (req.query.type === 'income' || req.query.type === 'expense')) {
       filter.type = req.query.type;
+      console.log(`Filtrando por tipo: ${req.query.type}`);
+    } else if (req.query.type) {
+      console.log(`Ignorando filtro de tipo inválido: ${req.query.type}`);
     }
-
+    
+    console.log('Filtro de búsqueda final:', filter);
+    
+    // Contar total de eventos en la base de datos (para depuración)
+    const totalEvents = await Event.countDocuments({});
+    console.log('Total de eventos en la base de datos:', totalEvents);
+    
+    // Contar eventos del usuario sin filtro de tipo
+    const userEvents = await Event.countDocuments({ user: req.user._id });
+    console.log('Total de eventos del usuario:', userEvents);
+    
     const events = await Event.find(filter).sort({ date: -1 });
+    console.log('Eventos encontrados para el usuario con filtros:', events.length);
     
     res.status(200).json({
       success: true,
@@ -28,7 +46,10 @@ exports.getAllEvents = async (req, res) => {
 // Obtener un evento por ID
 exports.getEventById = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    });
     
     if (!event) {
       return res.status(404).json({
@@ -54,7 +75,10 @@ exports.getEventById = async (req, res) => {
 // Crear un nuevo evento
 exports.createEvent = async (req, res) => {
   try {
-    const newEvent = new Event(req.body);
+    const newEvent = new Event({
+      ...req.body,
+      user: req.user._id
+    });
     await newEvent.save();
     
     res.status(201).json({
@@ -75,8 +99,8 @@ exports.createEvent = async (req, res) => {
 // Actualizar un evento existente
 exports.updateEvent = async (req, res) => {
   try {
-    const event = await Event.findByIdAndUpdate(
-      req.params.id,
+    const event = await Event.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
       req.body,
       { new: true, runValidators: true }
     );
@@ -106,7 +130,10 @@ exports.updateEvent = async (req, res) => {
 // Eliminar un evento
 exports.deleteEvent = async (req, res) => {
   try {
-    const event = await Event.findByIdAndDelete(req.params.id);
+    const event = await Event.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id
+    });
     
     if (!event) {
       return res.status(404).json({
@@ -141,8 +168,9 @@ exports.getMonthlyExpenseSummary = async (req, res) => {
     const startDate = new Date(year, month - 1, 1).getTime() / 1000;
     const endDate = new Date(year, month, 0, 23, 59, 59).getTime() / 1000;
     
-    // Buscar eventos en el rango de fechas
+    // Buscar eventos en el rango de fechas para el usuario autenticado
     const events = await Event.find({
+      user: req.user._id,
       date: { $gte: startDate, $lte: endDate }
     }).sort({ date: 1 });
     
