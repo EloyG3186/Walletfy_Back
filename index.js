@@ -16,6 +16,7 @@ const utf8Encoding = require('./src/middlewares/utf8Encoding');
 // Import routes
 const eventRoutes = require('./src/routes/eventRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const statsRoutes = require('./src/routes/statsRoutes');
 
 // Import Passport config
 require('./src/config/passport');
@@ -51,7 +52,9 @@ app.get('/', (req, res) => {
     message: 'Bienvenido a la API de Walletfy',
     version: '1.0.0',
     endpoints: {
-      events: '/api/events'
+      events: '/api/events',
+      users: '/api/users',
+      stats: '/api/stats'
     }
   });
 });
@@ -59,6 +62,7 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/events', eventRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/stats', statsRoutes);
 
 // 404 handler
 app.use((req, res) => {
