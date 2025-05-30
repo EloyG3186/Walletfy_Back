@@ -31,7 +31,8 @@ exports.getAllEvents = async (req, res) => {
     
     res.status(200).json({
       success: true,
-      events
+      count: events.length,
+      events: events || [] // Asegura que siempre sea un array
     });
   } catch (error) {
     console.error('Error al obtener eventos:', error);
@@ -75,10 +76,57 @@ exports.getEventById = async (req, res) => {
 // Crear un nuevo evento
 exports.createEvent = async (req, res) => {
   try {
+    // Validar que los campos requeridos estén presentes
+    const requiredFields = ['name', 'description', 'date', 'amount', 'type'];
+    const missingFields = [];
+    
+    for (const field of requiredFields) {
+      if (req.body[field] === undefined || req.body[field] === null || req.body[field] === '') {
+        missingFields.push(field);
+      }
+    }
+    
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error de validación',
+        errors: [`Campos requeridos faltantes: ${missingFields.join(', ')}`]
+      });
+    }
+    
+    // Validar que los tipos de datos sean correctos
+    if (typeof req.body.date !== 'number') {
+      return res.status(400).json({
+        success: false,
+        message: 'Error de validación',
+        errors: [`El campo 'date' debe ser un número (timestamp). Valor recibido: ${typeof req.body.date}`]
+      });
+    }
+    
+    if (typeof req.body.amount !== 'number') {
+      return res.status(400).json({
+        success: false,
+        message: 'Error de validación',
+        errors: [`El campo 'amount' debe ser un número. Valor recibido: ${typeof req.body.amount}`]
+      });
+    }
+    
+    if (req.body.type !== 'income' && req.body.type !== 'expense') {
+      return res.status(400).json({
+        success: false,
+        message: 'Error de validación',
+        errors: [`El campo 'type' debe ser 'income' o 'expense'. Valor recibido: ${req.body.type}`]
+      });
+    }
+    
+    // Log para depuración
+    console.log('Datos del evento a crear:', JSON.stringify(req.body, null, 2));
+    
     const newEvent = new Event({
       ...req.body,
       user: req.user._id
     });
+    
     await newEvent.save();
     
     res.status(201).json({
@@ -88,10 +136,24 @@ exports.createEvent = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al crear evento:', error);
+    
+    // Manejar errores de validación de mongoose
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.keys(error.errors).map(field => {
+        return `${field}: ${error.errors[field].message}`;
+      });
+      
+      return res.status(400).json({
+        success: false,
+        message: 'Error de validación',
+        errors: validationErrors
+      });
+    }
+    
     res.status(400).json({
       success: false,
       message: 'Error al crear el evento',
-      error: error.message
+      errors: [error.message]
     });
   }
 };

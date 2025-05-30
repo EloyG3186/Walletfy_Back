@@ -25,7 +25,39 @@ require('./src/config/passport');
 const app = express();
 
 // Middleware
-app.use(cors());
+// Usar paquete cors con configuración explícita
+app.use(cors({
+  // Modo desarrollo: permitir cualquier origen
+  origin: function(origin, callback) {
+    // Lista de dominios permitidos
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://28b1-2800-bf0-8047-1463-8d3d-565e-ef62-6558.ngrok-free.app'
+      // Puedes añadir aquí tu nueva URL de ngrok cuando la obtengas
+    ];
+    
+    // En desarrollo, permitir cualquier origen
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    // Permitir solicitudes sin origen (como aplicaciones móviles o curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('Origen bloqueado por CORS:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning']
+}));
+
+// Asegurar que preflight OPTIONS funcione correctamente
+app.options('*', cors());
 app.use(express.json({ charset: 'utf-8' }));
 app.use(express.urlencoded({ extended: true, charset: 'utf-8' }));
 app.use(morgan('dev'));
