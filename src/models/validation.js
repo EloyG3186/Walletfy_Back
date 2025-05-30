@@ -115,7 +115,7 @@ const userRegisterSchema = Joi.object({
       if (isNaN(num)) {
         return helpers.error('number.base');
       }
-      return num;
+      return false;
     })
   ).default(0)
     .messages({

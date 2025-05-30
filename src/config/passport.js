@@ -28,7 +28,7 @@ passport.use(
       scope: ['profile', 'email'],
       proxy: true
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (profile, done) => {
       try {
         // Verificar si el usuario ya existe
         let user = await User.findOne({ googleId: profile.id });
@@ -80,7 +80,7 @@ passport.use(
       profileFields: ['id', 'emails', 'name', 'picture.type(large)'],
       proxy: true
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (profile, done) => {
       try {
         // Verificar si el usuario ya existe
         let user = await User.findOne({ facebookId: profile.id });
